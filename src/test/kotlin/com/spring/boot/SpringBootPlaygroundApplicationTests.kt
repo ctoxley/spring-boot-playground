@@ -20,7 +20,7 @@ class SpringBootPlaygroundApplicationTests {
 
 	@Test
 	fun `health check status`() {
-		mockMvc.perform(get("/health/status").accept(MediaType.APPLICATION_JSON))
+		mockMvc.perform(get("/health").accept(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk)
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(jsonPath("status").value("up"))

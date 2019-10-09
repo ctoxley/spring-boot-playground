@@ -10,7 +10,7 @@
 
 Request:
 
-    GET /health/status
+    GET /health
 
 Response:
 

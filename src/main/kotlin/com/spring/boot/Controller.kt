@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/health")
 class HealthController {
 
-    @GetMapping("/status", produces=[MediaType.APPLICATION_JSON_VALUE])
-    fun status() : String {
+    @GetMapping(produces=[MediaType.APPLICATION_JSON_VALUE])
+    fun status(): String {
         return "{ \"status\": \"up\"}"
     }
 }
