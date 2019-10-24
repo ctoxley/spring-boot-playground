@@ -4,8 +4,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON_UTF8
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -19,10 +18,10 @@ class SpringBootPlaygroundApplicationTests {
 	private lateinit var mockMvc: MockMvc
 
 	@Test
-	fun `health check status`() {
-		mockMvc.perform(get("/health").accept(MediaType.APPLICATION_JSON))
+	fun `health check`() {
+		mockMvc.perform(get("/health"))
 				.andExpect(status().isOk)
-				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(content().contentType(APPLICATION_JSON_UTF8))
 				.andExpect(jsonPath("status").value("up"))
 	}
 }
