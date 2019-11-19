@@ -7,41 +7,73 @@ import org.junit.Test
 class ValidateTest {
 
     @Test
-    fun `failure to null`() {
-        val failure = validate(anEmailRequestWithNoTo())
-        assertThat(failure).isInstanceOf(Failure::class.java)
+    fun `failure attachment extension null`() {
+        when(val failure = validate(anEmailRequestWithoutAttachmentExtension())) {
+            is Failure -> assertThat(failure.issues).contains(aMandatoryIssue("attachment.extension"))
+            else -> fail("Failure expected")
+        }
     }
 
     @Test
-    fun `failure to blank`() {
-        val failure = validate(anEmailRequestWithBlankTo())
-        assertThat(failure).isInstanceOf(Failure::class.java)
+    fun `failure attachment extension blank`() {
+        when(val failure = validate(anEmailRequestWithBlankAttachmentExtension())) {
+            is Failure -> assertThat(failure.issues).contains(aMandatoryIssue("attachment.extension"))
+            else -> fail("Failure expected")
+        }
     }
 
     @Test
-    fun `failure to reason provided`() {
-        when (val failure = validate(anEmailRequestWithBlankTo())) {
-            is Failure -> assertThat(failure.issues).contains(aMandatoryIssue("to"))
+    fun `failure attachment name null`() {
+        when(val failure = validate(anEmailRequestWithoutAttachmentName())) {
+            is Failure -> assertThat(failure.issues).contains(aMandatoryIssue("attachment.name"))
+            else -> fail("Failure expected")
+        }
+    }
+
+    @Test
+    fun `failure attachment name blank`() {
+        when(val failure = validate(anEmailRequestWithBlankAttachmentName())) {
+            is Failure -> assertThat(failure.issues).contains(aMandatoryIssue("attachment.name"))
+            else -> fail("Failure expected")
+        }
+    }
+
+    @Test
+    fun `failure to no a valid email`() {
+        when (val failure = validate(anEmailRequestWithInvalidEmail())) {
+            is Failure -> assertThat(failure.issues).contains("Attribute to is invalid")
             else -> fail("Failure expected")
         }
     }
 
     @Test
     fun `failure subject null`() {
-        val failure = validate(anEmailRequestWithNoSubject())
-        assertThat(failure).isInstanceOf(Failure::class.java)
+        when (val failure = validate(anEmailRequestWithBlankSubject())) {
+            is Failure -> assertThat(failure.issues).contains(aMandatoryIssue("subject"))
+            else -> fail("Failure expected")
+        }
     }
 
     @Test
     fun `failure subject blank`() {
-        val failure = validate(anEmailRequestWithBlankSubject())
-        assertThat(failure).isInstanceOf(Failure::class.java)
+        when (val failure = validate(anEmailRequestWithBlankSubject())) {
+            is Failure -> assertThat(failure.issues).contains(aMandatoryIssue("subject"))
+            else -> fail("Failure expected")
+        }
     }
 
     @Test
-    fun `failure subject reason provided`() {
-        when (val failure = validate(anEmailRequestWithBlankSubject())) {
-            is Failure -> assertThat(failure.issues).contains(aMandatoryIssue("subject"))
+    fun `failure to null`() {
+        when (val failure = validate(anEmailRequestWithoutTo())) {
+            is Failure -> assertThat(failure.issues).contains(aMandatoryIssue("to"))
+            else -> fail("Failure expected")
+        }
+    }
+
+    @Test
+    fun `failure to blank`() {
+        when (val failure = validate(anEmailRequestWithBlankTo())) {
+            is Failure -> assertThat(failure.issues).contains(aMandatoryIssue("to"))
             else -> fail("Failure expected")
         }
     }

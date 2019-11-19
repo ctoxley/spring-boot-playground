@@ -1,13 +1,14 @@
 package com.spring.boot
 
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.springframework.http.HttpStatus.OK
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.CREATED
+import org.springframework.mail.javamail.JavaMailSender
+import javax.mail.internet.MimeMessage
 
 class ControllerTest {
 
@@ -16,17 +17,50 @@ class ControllerTest {
     private lateinit var validEmailRequest: EmailRequest
     private lateinit var invalidEmailRequest: EmailRequest
     private lateinit var mockSuccessValidator: Validator<EmailRequest>
+    private lateinit var mockEmailTransformer: EmailTransformer
+    private lateinit var mockMimeMessage: MimeMessage
+    private lateinit var mimeMessageSupplier: MimeMessageSupplier
+    private lateinit var mockJavaMailSender: JavaMailSender
 
     @Before
     fun setUp() {
         healthController = HealthController()
         validEmailRequest = anEmailRequest()
         invalidEmailRequest = anEmailRequestWithBlankSubject()
+        mimeMessageSupplier = { mockMimeMessage }
         mockSuccessValidator = mock {
             on { invoke(validEmailRequest) } doReturn Success(validEmailRequest)
             on { invoke(invalidEmailRequest) } doReturn aFailureWithBlackSubjectIssue(invalidEmailRequest)
         }
-        emailController = EmailController(mockSuccessValidator)
+        mockMimeMessage = mock()
+        mockEmailTransformer = mock {
+            on { invoke(eq(validEmailRequest), any())  } doReturn mockMimeMessage
+        }
+        mockJavaMailSender = mock()
+        emailController = EmailController(mockSuccessValidator, mockEmailTransformer, mockJavaMailSender)
+    }
+
+    @Test
+    fun `email send`() {
+        emailController.send(validEmailRequest)
+        verify(mockJavaMailSender).send(mockMimeMessage)
+    }
+
+    @Test
+    fun `email request transformed`() {
+        emailController.send(validEmailRequest)
+        verify(mockEmailTransformer).invoke(eq(validEmailRequest), any())
+    }
+
+    @Test
+    fun `email request has attachments`() {
+        assertThat(validEmailRequest.hasAttachments()).isTrue()
+    }
+
+    @Test
+    fun `email request can be empty`() {
+        val emailRequest = fromJson("{}", EmailRequest::class.java)
+        assertThat(emailRequest).isEqualTo(anEmptyEmailRequest())
     }
 
     @Test
