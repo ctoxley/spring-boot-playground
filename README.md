@@ -17,3 +17,9 @@ Response:
     {
         "status": "up"
     }
+    
+## Branches
+
+##### Email Endpoint:
+ 
+    https://github.com/ctoxley/spring-boot-playground/tree/email
